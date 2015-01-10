@@ -1,0 +1,138 @@
+<template>
+	<p><audio controls></audio></p>
+	<p><strong><a href="" class="file"></a></strong></p>
+	<ul></ul>
+</template>
+
+<script>
+	(function(window, document, undefined) {
+		var self;
+		var Player   = Object.create(HTMLElement.prototype);
+		var template = document.currentScript.ownerDocument.querySelector('template').content;
+
+		Player.shadowRoot;
+		Player.loop;
+		Player.audio;
+		Player.autoplay;
+		Player.current;
+		Player.playlist;
+		Player.list;
+		Player.link;
+		Player.shuffle;
+
+		Player.createdCallback = function() {
+			self = this;
+
+			this.shadowRoot = this.createShadowRoot();
+			this.shadowRoot.appendChild(document.importNode(template, true));
+
+			this.audio      = this.shadowRoot.querySelector('audio');
+			this.link       = this.shadowRoot.querySelector('.file');
+			this.list       = this.shadowRoot.querySelector('ul');
+			this.autoplay   = this.getAttribute('autoplay') || true;
+			this.loop       = this.getAttribute('loop') || true;
+			this.shuffle    = this.getAttribute('shuffle') || false;
+			this.current    = 0;
+			this.playlist   = [];
+
+			this.audio.onended = Player.onended;
+
+			this.setCallback(this.getAttribute('callback') || 'playlist');
+			this.setPlaylist(this.getAttribute('src') || 'playlist.json');
+		};
+
+		/**
+		 * register callback for jsonp-playlist
+		 */
+		Player.setCallback = function(name) {
+			window[name] = this.getPlaylist;
+		};
+
+		/**
+		 * create script-tab for playlist
+		 */
+		Player.setPlaylist = function(src) {
+			var json = document.createElement('script');
+			json.src = src;
+
+			document.querySelector('body').appendChild(json);
+		};
+
+		/**
+		 * clear playlist and add first track
+		 */
+		Player.getPlaylist = function(tracks) {
+			self.current  = 0;
+			self.playlist = tracks;
+
+			if(self.shuffle)
+				self.playlist.sort(function() {
+					return .5 - Math.random();
+				});
+
+			var playstr = '';
+
+			for(track in self.playlist)
+				playstr += '<li><a href="#' + track + '">' + self.playlist[track].title + '</a></li>';
+
+			self.list.innerHTML = playstr;
+
+			self.setTrack(self.current);
+
+			[].forEach.call(self.shadowRoot.querySelectorAll('ul li a'), function(link) {
+				link.onclick = function(event) {
+					event.preventDefault();
+
+					self.current = this.getAttribute('href').substring(1);
+					self.setTrack(self.current);
+					self.play();
+				};
+			});
+
+			if(self.autoplay)
+				self.play();
+		};
+
+		/**
+		 * set now-playing track
+		 */
+		Player.setTrack = function(index) {
+			var source  = document.createElement('source');
+			source.src  = self.playlist[index].file;
+
+			self.audio.innerHTML = '';
+			self.audio.appendChild(source);
+
+			[].forEach.call(self.shadowRoot.querySelectorAll('ul li'), function(link) {
+				link.style['list-style-type'] = 'none';
+			});
+
+			self.shadowRoot.querySelector('ul li:nth-of-type(' + (parseInt(index) + 1) + ')').style['list-style-type'] = 'inherit';
+
+			self.link.href      = self.playlist[index].file;
+			self.link.innerText = self.playlist[index].title;
+		};
+
+		/**
+		 * goto nexttrack
+		 * the !loop isnt working yet :(
+		 */
+		Player.onended = function() {
+			if(++self.current >= self.playlist.length)
+				if(true || self.loop)
+					self.current = 0;
+
+			self.setTrack(self.current);
+			self.play();
+		};
+
+		Player.play = function() {
+			self.audio.load();
+			self.audio.play();
+		}
+
+		window.AudioList = document.registerElement('play-list', {
+			prototype: Player
+		});
+	})(window, document);
+</script>
