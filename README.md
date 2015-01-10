@@ -1,4 +1,3 @@
-
 Audio-List
 ---
 A simple web component for playlists and audio-elements.
@@ -15,3 +14,7 @@ Attributes
 |shuffle|bool|false|
 |src|string|./playlist.json|
 |callback|string|playlist|
+
+Example
+---
+<play-list src="playlist.json" shuffle="true"></play-list>
