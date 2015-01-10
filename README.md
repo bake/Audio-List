@@ -17,4 +17,4 @@ Attributes
 
 Example
 ---
-<play-list src="playlist.json" shuffle="true"></play-list>
+`<play-list src="playlist.json" shuffle="true"></play-list>`
