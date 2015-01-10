@@ -17,4 +17,16 @@ Attributes
 
 Example
 ---
-`<play-list src="playlist.json" shuffle="true"></play-list>`
+index.html
+
+	<play-list src="playlist.json" shuffle="true"></play-list>
+
+playlist.json
+
+	playlist([{
+		"title": "Cream - Anyone for Tennis",
+		"file": "./mp3/cream/anyonefortennis.mp3"
+	}, {
+		"title": "Led Zeppelin - Kashmir",
+		"file": "./mp3/zeppelin/kashmir.mp3"
+	}])
