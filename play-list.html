@@ -1,5 +1,5 @@
 <template>
-	<p><audio controls></audio></p>
+	<p><audio controls><source></audio></p>
 	<p><strong><a href="" class="file"></a></strong></p>
 	<ul></ul>
 </template>
@@ -10,32 +10,37 @@
 		var Player   = Object.create(HTMLElement.prototype);
 		var template = document.currentScript.ownerDocument.querySelector('template').content;
 
-		Player.shadowRoot;
-		Player.loop;
 		Player.audio;
 		Player.autoplay;
 		Player.current;
-		Player.playlist;
-		Player.list;
 		Player.link;
+		Player.list;
+		Player.loop;
+		Player.playlist;
+		Player.shadowRoot;
 		Player.shuffle;
 
 		Player.createdCallback = function() {
 			self = this;
 
 			this.shadowRoot = this.createShadowRoot();
+
 			this.shadowRoot.appendChild(document.importNode(template, true));
 
 			this.audio      = this.shadowRoot.querySelector('audio');
 			this.link       = this.shadowRoot.querySelector('.file');
 			this.list       = this.shadowRoot.querySelector('ul');
+			this.source     = this.shadowRoot.querySelector('audio source');
+
+			this.autoplay   = (this.getAttribute('autoplay') == 'true') || true;
 			this.loop       = (this.getAttribute('loop') == 'true') || false;
 			this.shuffle    = (this.getAttribute('shuffle') == 'true') || false;
-			this.autoplay   = (this.getAttribute('autoplay') == 'true') || true;
+
 			this.current    = 0;
 			this.playlist   = [];
 
 			this.audio.onended = Player.onended;
+			this.audio.onplay  = Player.onplay;
 
 			this.setCallback(this.getAttribute('callback') || 'playlist');
 			this.setPlaylist(this.getAttribute('src') || 'playlist.json');
@@ -83,7 +88,9 @@
 				link.onclick = function(event) {
 					event.preventDefault();
 
-					self.current = this.getAttribute('href').substring(1);
+					self.current  = this.getAttribute('href').substring(1);
+					self.autoplay = true;
+
 					self.setTrack(self.current);
 					self.play();
 				};
@@ -97,11 +104,9 @@
 		 * set now-playing track
 		 */
 		Player.setTrack = function(index) {
-			var source  = document.createElement('source');
-			source.src  = self.playlist[index].file;
+			self.source.src = self.playlist[index].file;
 
-			self.audio.innerHTML = '';
-			self.audio.appendChild(source);
+			self.audio.load();
 
 			[].forEach.call(self.shadowRoot.querySelectorAll('ul li'), function(link) {
 				link.style['list-style-type'] = 'none';
@@ -130,8 +135,15 @@
 				self.play();
 		};
 
+		/**
+		 * the audio's already playing or the play button was clicked. either way
+		 * we can play the following track, too.
+		 */
+		Player.onplay = function() {
+			self.autoplay = true;
+		};
+
 		Player.play = function() {
-			self.audio.load();
 			self.audio.play();
 		}
 
