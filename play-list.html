@@ -29,9 +29,9 @@
 			this.audio      = this.shadowRoot.querySelector('audio');
 			this.link       = this.shadowRoot.querySelector('.file');
 			this.list       = this.shadowRoot.querySelector('ul');
-			this.autoplay   = this.getAttribute('autoplay') || true;
-			this.loop       = this.getAttribute('loop') || true;
-			this.shuffle    = this.getAttribute('shuffle') || false;
+			this.loop       = (this.getAttribute('loop') == 'true') || false;
+			this.shuffle    = (this.getAttribute('shuffle') == 'true') || false;
+			this.autoplay   = (this.getAttribute('autoplay') == 'true') || true;
 			this.current    = 0;
 			this.playlist   = [];
 
@@ -115,15 +115,19 @@
 
 		/**
 		 * goto nexttrack
-		 * the !loop isnt working yet :(
 		 */
 		Player.onended = function() {
-			if(++self.current >= self.playlist.length)
-				if(true || self.loop)
-					self.current = 0;
+			if(++self.current >= self.playlist.length) {
+				self.current = 0;
+
+				if(!self.loop)
+					self.autoplay = false;
+			}
 
 			self.setTrack(self.current);
-			self.play();
+
+			if(self.autoplay)
+				self.play();
 		};
 
 		Player.play = function() {
