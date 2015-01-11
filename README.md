@@ -10,7 +10,7 @@ Attributes
 |attr|type|default|
 |---|---|---|
 |autoplay|bool|true|
-|loop|bool|true|
+|loop|bool|false|
 |shuffle|bool|false|
 |src|string|./playlist.json|
 |callback|string|playlist|
