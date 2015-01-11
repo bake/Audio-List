@@ -2,7 +2,7 @@ Audio-List
 ---
 A simple web component for playlists and audio-elements.
 
-[Demo](http://mp3.w8l.org/hp1/playlst/)
+[Demo](http://mp3.w8l.org/droggelbecher/)
 
 Attributes
 ---
