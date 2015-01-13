@@ -12,6 +12,7 @@ Attributes
 |autoplay|bool|true|
 |loop|bool|false|
 |shuffle|bool|false|
+|random|bool|false|
 |src|string|./playlist.json|
 |callback|string|playlist|
 
