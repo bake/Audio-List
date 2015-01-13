@@ -161,22 +161,27 @@
 			self.audio.play();
 		};
 
+		Player.pause = function() {
+			self.audio.pause();
+		};
+
+		Player.toggle = function() {
+			if(self.audio.paused)
+				self.audio.play();
+			else
+				self.audio.pause();
+		};
+
+		Player.getCurrent = function() {
+			return self.playlist[self.current];
+		};
+
 		/**
 		 * update boolean attributes only
 		 */
 		Player.attributeChangedCallback = function(attrName, oldVal, newVal) {
 			if(self[attrName] !== undefined)
 				self[attrName] = (newVal == 'true');
-		};
-
-		/**
-		 * toggle play/pause
-		 */
-		Player.toggle = function() {
-			if(self.audio.paused)
-				self.audio.play();
-			else
-				self.audio.pause();
 		};
 
 		window.AudioList = document.registerElement('play-list', {
