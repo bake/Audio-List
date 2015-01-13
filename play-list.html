@@ -169,6 +169,16 @@
 				self[attrName] = (newVal == 'true');
 		};
 
+		/**
+		 * toggle play/pause
+		 */
+		Player.toggle = function() {
+			if(self.audio.paused)
+				self.audio.play();
+			else
+				self.audio.pause();
+		};
+
 		window.AudioList = document.registerElement('play-list', {
 			prototype: Player
 		});
