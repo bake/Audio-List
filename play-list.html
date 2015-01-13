@@ -24,25 +24,25 @@
 		Player.createdCallback = function() {
 			self = this;
 
+			var attributes     = ['autoplay', 'loop', 'random', 'shuffle', 'random'];
+
 			this.shadowRoot    = this.createShadowRoot();
 
 			this.shadowRoot.appendChild(document.importNode(template, true));
 
+			this.current       = 0;
+			this.playlist      = [];
 			this.audio         = this.shadowRoot.querySelector('audio');
 			this.link          = this.shadowRoot.querySelector('.file');
 			this.list          = this.shadowRoot.querySelector('ul');
 			this.source        = this.shadowRoot.querySelector('audio source');
-
-			this.loop          = (this.getAttribute('loop')     == 'true') || false;
-			this.random        = (this.getAttribute('random')   == 'true') || false;
-			this.shuffle       = (this.getAttribute('shuffle')  == 'true') || false;
-			this.autoplay      = (this.getAttribute('autoplay') == 'true') || true;
-
-			this.current       = 0;
-			this.playlist      = [];
-
 			this.audio.onended = Player.onended;
 			this.audio.onplay  = Player.onplay;
+
+			for(i in attributes) {
+				var attribute       = this.getAttribute(attributes[i]);
+				this[attributes[i]] = (attribute != null ? attribute == 'true' : false);
+			}
 
 			this.setCallback(this.getAttribute('callback') || 'playlist');
 			this.setPlaylist(this.getAttribute('src') || 'playlist.json');
@@ -159,7 +159,15 @@
 
 		Player.play = function() {
 			self.audio.play();
-		}
+		};
+
+		/**
+		 * update boolean attributes only
+		 */
+		Player.attributeChangedCallback = function(attrName, oldVal, newVal) {
+			if(self[attrName] !== undefined)
+				self[attrName] = (newVal == 'true');
+		};
 
 		window.AudioList = document.registerElement('play-list', {
 			prototype: Player
